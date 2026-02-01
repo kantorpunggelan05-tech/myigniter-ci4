@@ -3,42 +3,50 @@
 use CodeIgniter\Router\RouteCollection;
 
 /**
- * --------------------------------------------------------------------
- * Route Definitions
- * --------------------------------------------------------------------
+ * @var RouteCollection $routes
  */
 
-// We get a performance increase by specifying the default
-// route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
+// 1. Rute Publik
+$routes->get('/login', 'Auth::index');
+$routes->post('/auth/loginProcess', 'Auth::loginProcess');
+$routes->get('/logout', 'Auth::logout');
+$routes->get('/home', 'Home::index');
 
-/**
- * --------------------------------------------------------------------
- * RUTE LATIHAN CRUD MAHASISWA (Tahap 4 - Tahap 9)
- * --------------------------------------------------------------------
- */
+// 2. Rute Terproteksi (Wajib Login)
+$routes->group('', ['filter' => 'auth'], function($routes) {
+    
+    // Dashboard
+    $routes->get('/', 'Dashboard::index');
+    $routes->get('/dashboard', 'Dashboard::index');
 
-// 1. READ (Tahap 4 & 6)
-// Menampilkan halaman utama tabel mahasiswa
-$routes->get('/coba', 'Latihan::index');
+    // CRUD Mahasiswa (Latihan)
+    $routes->get('/coba', 'Latihan::index');
+    $routes->get('/mahasiswa', 'Latihan::index');
+    $routes->get('/tambah', 'Latihan::tambah');
+    $routes->post('/simpan', 'Latihan::simpan');
+    $routes->get('/edit/(:num)', 'Latihan::edit/$1');
+    $routes->post('/update/(:num)', 'Latihan::update/$1');
+    $routes->get('/hapus/(:num)', 'Latihan::hapus/$1');
 
-// 2. CREATE (Tahap 7)
-// Menampilkan form tambah data
-$routes->get('/tambah', 'Latihan::tambah');
-// Memproses penyimpanan data (menggunakan POST karena mengirim data rahasia/form)
-$routes->post('/simpan', 'Latihan::simpan');
+    // --- CRUD DOSEN (TAHAP 6) ---
+    $routes->get('/dosen', 'Dosen::index');
+    $routes->get('/dosen/tambah', 'Dosen::tambah');
+    $routes->post('/dosen/simpan', 'Dosen::simpan');
+    $routes->get('/dosen/edit/(:num)', 'Dosen::edit/$1');
+    $routes->post('/dosen/update/(:num)', 'Dosen::update/$1');
+    $routes->get('/dosen/hapus/(:num)', 'Dosen::hapus/$1');
 
-// 3. UPDATE (Tahap 8)
-// Menampilkan form edit berdasarkan ID (:num artinya hanya menerima angka)
-// $1 artinya mengambil parameter pertama (angka ID tersebut) dan mengirimnya ke Controller
-$routes->get('/edit/(:num)', 'Latihan::edit/$1');
-// Memproses update data berdasarkan ID
-$routes->post('/update/(:num)', 'Latihan::update/$1');
+    // --- MANAJEMEN USERS (MANUAL) ---
+    $routes->get('/users', 'Users::index');
+    $routes->get('/users/tambah', 'Users::tambah');
+    $routes->post('/users/simpan', 'Users::simpan');
+    $routes->get('/users/edit/(:num)', 'Users::edit/$1');
+    $routes->post('/users/update/(:num)', 'Users::update/$1');
+    $routes->get('/users/hapus/(:num)', 'Users::hapus/$1');
 
-// 4. DELETE (Tahap 9)
-// Menghapus data berdasarkan ID
-$routes->get('/hapus/(:num)', 'Latihan::hapus/$1');
-
-// --- Rute Tambahan (Sisa Tahap 4 Awal) ---
-// Ini opsional, rute tes sederhana
-$routes->get('/profil', 'Latihan::biodata');
+    // Pengaturan
+    $routes->get('/pengaturan', 'Pengaturan::index');
+    $routes->get('/profil', 'Pengaturan::index');
+    $routes->post('/pengaturan/updateProfil', 'Pengaturan::updateProfil');
+    $routes->post('/pengaturan/updatePassword', 'Pengaturan::updatePassword');
+});
